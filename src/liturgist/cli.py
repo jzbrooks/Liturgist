@@ -49,7 +49,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--hymnal-dir",
         dest="hymnal_dir",
-        help="Directory containing hymn sheet music files named by number (e.g., 552.pdf, 552.png, or 552-1.png)",
+        help="Directory containing hymn sheet music PDFs, conventionally named NUMBER_HYPENATED-NAME.pdf. Number matching takes precedence over name matching. Punctuation and spaces are normalized during name matching.",
     )
     parser.add_argument(
         "schedule", help="A path to a schedule - csv, ods, xlsx, and json are supported"

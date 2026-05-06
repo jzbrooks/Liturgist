@@ -37,7 +37,10 @@ Options:
   --date TEXT           Date in YYYY-mm-dd format (defaults to next Sunday)
   --print-json          Print data as JSON instead of rendering template
   --bible-json-path     Path to Bible JSON file for scripture text lookup
-  --hymnal-dir          Directory containing hymn sheet music files named by number (e.g., 552.pdf, 552.png, or 552-1.png)
+  --hymnal-dir          Directory containing hymn sheet music PDFs, conventionally
+                        named NUMBER_HYPENATED-NAME.pdf. Number matching takes
+                        precedence over name matching. Punctuation and spaces are
+                        normalized during name matching.
   --template TEXT       Path to Handlebars template file
   -o, --output TEXT     Output file path (default: output/out.pdf)
   --help               Show this message and exit
@@ -47,7 +50,7 @@ Options:
 The simplest use of the tool is to print data as JSON from a spreadsheet.
 
 ```sh
-liturgist --print-json liturgy.ods
+liturgist --print-json liturgy.xlsx
 ```
 
 Example output:
@@ -204,7 +207,41 @@ The following variables are available in templates:
 
 The `EXPANDED_SCRIPTURE_REFS` array is available if `--bible-json-path` is specified and contains the full text of each entry in `SCRIPTURE_REFS`.
 
-The `HYMN_SCORES` array is available if `--hymnal-dir` is specified. Each entry is either `null` (no parseable hymn number, or no matching files) or an object with `number` (the hymn number) and `sheets` (an array of base64 encoded image uris, one per sheet).
+The `HYMN_SCORES` array is available if `--hymnal-dir` is specified. Each entry is either `null` (no matching score) or an object with `number` (the hymn number, may be `null`), `title` (the hymn title, may be `null`), and `sheets` (an array of base64 encoded image uris, one per sheet). See "Hymn Matching" below for how spreadsheet cells are matched to PDFs.
+
+## Hymn Matching
+
+When `--hymnal-dir` is specified, each entry in the `HYMNS` array is matched to a PDF in that directory.
+
+### Spreadsheet cell formats
+
+Each `Hymn N` cell may take any of these forms; the leading `Hymn ` is optional:
+
+| Cell                                    | Parsed number | Parsed title              |
+|-----------------------------------------|---------------|---------------------------|
+| `Hymn 552 - Rejoice, All Ye Believers`  | 552           | Rejoice, All Ye Believers |
+| `552 - Rejoice, All Ye Believers`       | 552           | Rejoice, All Ye Believers |
+| `Hymn 552`                              | 552           | —                         |
+| `552`                                   | 552           | —                         |
+| `Doxology`                              | —             | Doxology                  |
+
+### Filename conventions
+
+PDFs in `--hymnal-dir` should be named with one of these patterns. The underscore separates the number from the title, and hyphens within the title stand in for spaces — so the typical form is `NUMBER_HYPHENATED-TITLE.pdf` (e.g. `552_Rejoice-Ye-Pure-In-Heart.pdf`).
+
+| Filename                              | Indexed by number | Indexed by title          |
+|---------------------------------------|-------------------|---------------------------|
+| `552_Rejoice-Ye-Pure-In-Heart.pdf`    | 552               | "Rejoice Ye Pure In Heart"|
+| `552_Rejoice.pdf`                     | 552               | "Rejoice"                 |
+| `552.pdf`                             | 552               | —                         |
+| `O-Sacred-Head.pdf`                   | —                 | "O Sacred Head"           |
+| `Doxology.pdf`                        | —                 | "Doxology"                |
+
+### Match order
+
+For each `Hymn N` cell, the parsed number is looked up first; if no PDF matches, the parsed title is used. Title matching is case-insensitive and tolerant of punctuation and whitespace differences — both sides are folded to lowercase with all non-alphanumeric runs collapsed to single spaces. So `Rejoice, Ye Pure In Heart` (cell) matches `Rejoice-Ye-Pure-In-Heart.pdf` (file). If both number and title lookups fail, the entry in `HYMN_SCORES` is `null`.
+
+When a cell supplies a title, that title takes precedence over the title derived from the matched filename in the resulting `HYMN_SCORES` entry.
 
 ## Examples
 

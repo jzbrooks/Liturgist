@@ -16,8 +16,10 @@ from .core import (
     read_schedule,
 )
 from .hymnal import (
+    HymnRef,
     load_hymnal_scores,
     parse_hymn_number,
+    parse_hymn_ref,
 )
 from .scripture import get_scripture_text
 
@@ -26,6 +28,8 @@ __all__ = [
     "load_template_from_file",
     "get_scripture_text",
     "next_sunday",
+    "HymnRef",
     "load_hymnal_scores",
     "parse_hymn_number",
+    "parse_hymn_ref",
 ]
