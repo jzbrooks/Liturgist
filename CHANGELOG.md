@@ -3,16 +3,10 @@
 ## Unreleased
 
 ### Added
-
-### Changed
-
-### Deprecated
+- `--hymnal-dir` score lookup can find songs that are not indexed by number
 
 ### Removed
-
-### Fixed
-
-### Security
+- `--hymnal-dir` PNG support
 
 ## 3.0.0 - 2026-05-02
 
