@@ -231,11 +231,15 @@ PDFs in `--hymnal-dir` should be named with one of these patterns. The underscor
 
 | Filename                              | Indexed by number | Indexed by title          |
 |---------------------------------------|-------------------|---------------------------|
-| `552_Rejoice-Ye-Pure-In-Heart.pdf`    | 552               | "Rejoice Ye Pure In Heart"|
+| `552_Rejoice-Ye-Pure-In-Heart.pdf`    | 552               | "Rejoice, Ye Pure In Heart"|
 | `552_Rejoice.pdf`                     | 552               | "Rejoice"                 |
 | `552.pdf`                             | 552               | —                         |
 | `O-Sacred-Head.pdf`                   | —                 | "O Sacred Head"           |
 | `Doxology.pdf`                        | —                 | "Doxology"                |
+
+> [!NOTE]
+> **Naming tip — punctuation in titles**
+> Because matching collapses all non-alphanumeric characters to spaces on both sides, the simplest rule is to drop punctuation entirely from filenames and use hyphens for the spaces. For example, the hymn "Rejoice, Ye Pure in Heart" should be named `552_Rejoice-Ye-Pure-In-Heart.pdf` (no comma) — it will still match a spreadsheet cell that includes the comma. Apostrophes (`All Hail the Power of Jesus' Name`), ampersands, and periods can be omitted the same way. Avoid characters that aren't filesystem-safe (`/`, `\`, `:` on some systems); even when they are technically allowed, a punctuation-free filename is the safest match target.
 
 ### Match order
 
