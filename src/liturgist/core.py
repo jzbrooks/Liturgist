@@ -67,6 +67,27 @@ def read_schedule(schedule_path: str | Path) -> pd.DataFrame:
         raise ValueError(f"Unexpected schedule file type: {file_extension}")
 
 
+def _has_index_helper(this, options, arr, idx):
+    """Block helper: render body if ``arr[idx]`` exists and is non-None.
+
+    Usage::
+
+        {{#hasIndex SCRIPTURE_REFS 9}}...{{else}}...{{/hasIndex}}
+    """
+    try:
+        i = int(idx)
+    except (TypeError, ValueError):
+        return options["inverse"](this)
+    if isinstance(arr, list) and 0 <= i < len(arr) and arr[i] is not None:
+        return options["fn"](this)
+    return options["inverse"](this)
+
+
+TEMPLATE_HELPERS = {
+    "hasIndex": _has_index_helper,
+}
+
+
 def load_template_from_file(template_path: str | Path) -> Any:
     """
     Load and compile a Handlebars template from file.
@@ -80,7 +101,8 @@ def load_template_from_file(template_path: str | Path) -> Any:
     template_path = Path(template_path)
     template_source = template_path.read_text(encoding="utf-8")
     compiler = Compiler()
-    return compiler.compile(template_source)
+    compiled = compiler.compile(template_source)
+    return lambda data: compiled(data, helpers=TEMPLATE_HELPERS)
 
 
 def _find_column(csv_key: str, columns: pd.Index) -> str | None:
