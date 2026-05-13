@@ -2,8 +2,11 @@
 
 ## Unreleased
 
+## 3.1.0 - 2026-05-12
+
 ### Added
 - `--hymnal-dir` score lookup can find songs that are not indexed by number
+- `hasIndex` handlebars helper checks if an array index exists
 
 ### Removed
 - `--hymnal-dir` PNG support
